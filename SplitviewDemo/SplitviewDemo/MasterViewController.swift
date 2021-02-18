@@ -2,30 +2,51 @@
 //  MasterViewController.swift
 //  SplitviewDemo
 //
-//  Created by Arghadeep  on 16/02/21.
+//  Created by Arghadeep  on 18/02/21.
 //
 
 import UIKit
 
-class MasterViewController: UITableViewController {
+protocol SplitSelectionDelegate: class {
+  func splitSelected(_ newSplit: SplitModel)
+}
 
-    @IBOutlet weak var cellTitleLabel: UILabel!
+class MasterViewController: UITableViewController {
     
+    let splits = [
+        SplitModel(split: .camera),
+        SplitModel(split: .city),
+        SplitModel(split: .animals),
+        SplitModel(split: .flowers),
+        SplitModel(split: .stands),
+        SplitModel(split: .urban)
+    ]
+    
+    weak var delegate: SplitSelectionDelegate?
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.register(CustomCell.nib, forCellReuseIdentifier: CustomCell.identifier)
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return imagesArray.count
+        return splits.count
+    }
+
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+        cell.textLabel?.text = splits[indexPath.row].name
+        cell.backgroundColor = splits[indexPath.row].color
+        return cell
     }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: CustomCell.identifier) as! CustomCell
-        cell.cellTitle.text = namesArray[indexPath.row]
-        cell.cellTitle.textColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
-        cell.backgroundColor = colorsArray[indexPath.row]
-        return cell
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let selectedSplit = splits[indexPath.row]
+        delegate?.splitSelected(selectedSplit)
+        
+        if let detailVC = delegate as? DetailViewController, let detailNavVC = detailVC.navigationController {
+            splitViewController?.showDetailViewController(detailNavVC, sender: nil)
+        }
     }
 
 }
