@@ -48,5 +48,14 @@ class MasterViewController: UITableViewController {
             splitViewController?.showDetailViewController(detailNavVC, sender: nil)
         }
     }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if let navBarHeight = navigationController?.navigationBar.frame.height {
+            return (tableView.frame.height - navBarHeight) / CGFloat(splits.count)
+        } else {
+            return (tableView.frame.height - 60) / CGFloat(splits.count)
+        }
+       
+    }
 
 }
